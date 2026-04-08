@@ -108,22 +108,30 @@ WebSocket-based gossip protocol. PUT and GET over the wire with state vectors. M
 ### From Source
 
 ```bash
-# Clone the repo
+# Clone and build
 git clone https://github.com/Koba42Corp/Rawkit_Ai.git
 cd Rawkit_Ai
-
-# Build everything
 cargo build --release
 
-# Run benchmarks
-cargo run --release -- bench
+# Write and read data (persists to SQLite)
+rawkit put users/alice name '"Alice"'
+rawkit put users/alice age '30'
+rawkit get users/alice
+# users/alice:
+#   name = "Alice"
+#   age = 30.0
+
+rawkit ls users/
+# users/alice
 
 # Start a relay server
-cargo run --release -- serve --port 8765 --db rawkit.db
+rawkit serve --port 8765
 
-# Write and read data
-cargo run --release -- put users/alice name '"Alice"'
-cargo run --release -- get users/alice name
+# In another terminal: sync a local database to the relay
+rawkit --db local.db sync ws://localhost:8765
+
+# Run benchmarks
+rawkit bench
 ```
 
 ### As a Rust Dependency
@@ -289,31 +297,40 @@ Write locally, sync when connected. HAM resolves conflicts automatically. Works 
 ### Multi-Agent Coordination
 Agents share a graph namespace with certificate-based access control. Each agent proves its identity cryptographically.
 
-## Roadmap
+## Status
 
-- [x] Graph data model with HAM CRDT
-- [x] SQLite + in-memory storage adapters
-- [x] Ed25519 signing + X25519 encryption
-- [x] Multi-chain wallet identity derivation
-- [x] Certificate-based access control
-- [x] Vector index with cosine similarity
-- [x] Pluggable embedding providers
-- [x] WebSocket wire protocol
-- [x] Peer manager with gossip + dedup
-- [x] CLI with benchmarks
-- [x] WASM bindings
-- [ ] WebSocket relay server (accepting connections)
-- [ ] HNSW approximate nearest neighbor (replacing brute-force)
+Rawkit is in active development. Here's what works today and what's coming next.
+
+### Working Now (v0.1)
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| Graph engine + HAM CRDT | **Working** | Full conflict resolution, SQLite persistence, subscriptions |
+| CLI (`put`, `get`, `ls`, `bench`) | **Working** | Persists to SQLite across invocations |
+| WebSocket relay server | **Working** | Accepts connections, syncs PUT/GET, broadcasts to peers |
+| Client sync (`rawkit sync`) | **Working** | Connects to relay, pushes local data, receives updates |
+| Ed25519 + X25519 crypto | **Working** | Signing, encryption, wallet identity derivation |
+| Certificate ACL | **Working** | Signed, verifiable, path-pattern wildcards, expiry |
+| HNSW vector index | **Working** | Approximate nearest neighbor with configurable M/ef params |
+| Brute-force vector index | **Working** | Exact cosine similarity search (fallback) |
+| Local hash embeddings | **Working** | N-gram based, no API key needed, deterministic |
+| OpenAI embedding provider | **Working** | Calls any OpenAI-compatible API for real embeddings |
+| Peer manager | **Working** | Message dedup, gossip broadcast, HAM merge |
+| WASM bindings (source) | **Compiles** | wasm-bindgen bindings written, needs wasm-pack build |
+
+### Coming Next (v0.2)
+
 - [ ] npm package with TypeScript wrapper
-- [ ] LangChain memory adapter
-- [ ] LlamaIndex storage adapter
-- [ ] Browser playground demo
-- [ ] WebRTC transport
-- [ ] Distributed garbage collection
+- [ ] Browser playground demo (two syncing panels)
+- [ ] LangChain `BaseMemory` adapter
+- [ ] LlamaIndex `StorageContext` adapter
+- [ ] WebRTC transport (true P2P without relay)
+- [ ] Distributed garbage collection for tombstones
+- [ ] `rawkit bench --compare-gunjs` head-to-head benchmarks
 
 ## Test Suite
 
-55 tests covering graph operations, HAM conflict resolution, crypto roundtrips, vector search, peer sync, and storage adapters.
+64 tests covering graph operations, HAM conflict resolution, crypto roundtrips, HNSW search, embedding providers, peer sync, and storage adapters.
 
 ```bash
 cargo test
@@ -323,10 +340,10 @@ cargo test
 running 26 tests   (rawkit-core)    ... ok
 running 16 tests   (rawkit-crypto)  ... ok
 running  5 tests   (rawkit-sync)    ... ok
-running  7 tests   (rawkit-vectors) ... ok
+running 16 tests   (rawkit-vectors) ... ok
 running  1 test    (doc-tests)      ... ok
 
-test result: ok. 55 passed; 0 failed
+test result: ok. 64 passed; 0 failed
 ```
 
 ## Contributing

@@ -12,6 +12,8 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 ordered-float = "4"
 tracing = { workspace = true }
+ureq = { version = "2", features = ["json"] }
+rand = "0.8"
 
 [dev-dependencies]
 tokio = { workspace = true }

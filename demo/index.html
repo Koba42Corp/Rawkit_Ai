@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rawkit_AI — Live Sync Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid #1e1e1e;
+      background: #0d0d0d;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo img { height: 40px; }
+    .logo-text { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 0.04em; }
+    .logo-text span { color: #f97316; }
+
+    .relay-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+    .relay-status .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #333;
+      transition: background 0.3s;
+    }
+    .relay-status.connected .dot { background: #22c55e; box-shadow: 0 0 6px #22c55e80; }
+    .relay-status.connected { color: #22c55e; }
+    .relay-status.error .dot { background: #ef4444; }
+    .relay-status.error { color: #ef4444; }
+
+    /* ── Sub-header ── */
+    .sub-header {
+      padding: 10px 32px;
+      background: #0d0d0d;
+      font-size: 12px;
+      color: #555;
+      border-bottom: 1px solid #151515;
+    }
+    .sub-header code { color: #f97316; font-size: 11px; }
+
+    /* ── Main layout ── */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    /* ── Panel ── */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #1a1a1a;
+    }
+    .panel:last-child { border-right: none; }
+
+    .panel-header {
+      padding: 14px 24px;
+      background: #111;
+      border-bottom: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ccc;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .panel-ws-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: #1a1a1a;
+      color: #555;
+      transition: all 0.3s;
+    }
+    .panel-ws-badge.connected { background: #14532d; color: #86efac; }
+
+    /* ── Write form (left panel) ── */
+    .write-form {
+      padding: 24px;
+      border-bottom: 1px solid #1a1a1a;
+      background: #0d0d0d;
+    }
+    .write-form h3 {
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+    .field-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .field-label {
+      font-size: 11px;
+      color: #666;
+      width: 42px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus { border-color: #f97316; }
+    input[type="text"]::placeholder { color: #333; }
+
+    .btn-write {
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px;
+      background: #f97316;
+      color: #000;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-write:hover { background: #fb923c; }
+    .btn-write:active { transform: scale(0.98); }
+    .btn-write:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
+
+    /* ── Vector section ── */
+    .vector-section {
+      padding: 16px 24px;
+      border-bottom: 1px solid #1a1a1a;
+      background: #0a0a0a;
+    }
+    .vector-section h3 {
+      font-size: 11px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+    .btn-embed {
+      padding: 7px 14px;
+      background: transparent;
+      color: #f97316;
+      border: 1px solid #f9731640;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+    .btn-embed:hover { background: #f9731610; border-color: #f97316; }
+    .btn-embed:disabled { color: #333; border-color: #222; cursor: not-allowed; }
+
+    /* ── Event log ── */
+    .log-area {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      background: #080808;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    .log-entry {
+      display: flex;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      margin-bottom: 2px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .log-entry:hover { background: #111; }
+    .log-time { color: #444; flex-shrink: 0; font-size: 10px; padding-top: 2px; }
+    .log-soul { color: #f97316; font-weight: 600; }
+    .log-key { color: #60a5fa; }
+    .log-value { color: #86efac; word-break: break-all; }
+    .log-meta { color: #555; font-size: 10px; }
+    .log-system { color: #555; font-style: italic; }
+    .log-entry.local .log-soul { color: #fb923c; }
+    .log-entry.incoming { background: #0f1a0f; }
+    .log-entry.incoming .log-soul { color: #4ade80; }
+    .log-entry.vector { background: #0a0f1a; }
+    .log-entry.vector .log-soul { color: #818cf8; }
+
+    /* ── Search results (right panel) ── */
+    .search-area {
+      padding: 16px 24px;
+      border-bottom: 1px solid #1a1a1a;
+      background: #0a0a0a;
+    }
+    .search-area h3 {
+      font-size: 11px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+    .search-row { display: flex; gap: 8px; }
+    .btn-search {
+      padding: 8px 14px;
+      background: #1e1b4b;
+      color: #a5b4fc;
+      border: 1px solid #312e8140;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-search:hover { background: #2e2a5e; }
+    .btn-search:disabled { background: #111; color: #333; cursor: not-allowed; }
+
+    .search-results {
+      margin-top: 10px;
+      font-size: 11px;
+    }
+    .search-result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid #141414;
+      color: #666;
+    }
+    .search-result-soul { color: #818cf8; }
+    .search-result-score { color: #86efac; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 10px 32px;
+      border-top: 1px solid #1a1a1a;
+      background: #0d0d0d;
+      font-size: 11px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+    }
+    footer a { color: #f9731650; text-decoration: none; }
+    footer a:hover { color: #f97316; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="logo.png" alt="Rawkit_AI" />
+    <span class="logo-text">RAWKIT<span>_AI</span></span>
+  </div>
+  <div class="relay-status" id="relay-status">
+    <div class="dot"></div>
+    <span id="relay-status-text">Connecting to relay…</span>
+  </div>
+</header>
+
+<div class="sub-header">
+  Two independent browser-side Rawkit instances syncing through the relay at
+  <code id="relay-url-display">ws://localhost:8765</code>.
+  Each panel has its own WebSocket connection. Writes on the left appear on the right via the relay.
+</div>
+
+<main>
+  <!-- ── LEFT PANEL: Writer ── -->
+  <div class="panel" id="panel-left">
+    <div class="panel-header">
+      <span class="panel-title">Panel A — Writer</span>
+      <span class="panel-ws-badge" id="badge-left">disconnected</span>
+    </div>
+
+    <div class="write-form">
+      <h3>Write to graph</h3>
+      <div class="field-row">
+        <span class="field-label">soul</span>
+        <input type="text" id="inp-soul" placeholder="e.g. agents/alice" value="agents/alice" />
+      </div>
+      <div class="field-row">
+        <span class="field-label">key</span>
+        <input type="text" id="inp-key" placeholder="e.g. status" value="status" />
+      </div>
+      <div class="field-row">
+        <span class="field-label">value</span>
+        <input type="text" id="inp-value" placeholder="e.g. online" value="online" />
+      </div>
+      <button class="btn-write" id="btn-write" disabled>PUT →  Relay</button>
+    </div>
+
+    <div class="vector-section">
+      <h3>Vector embeddings</h3>
+      <div class="field-row">
+        <span class="field-label">soul</span>
+        <input type="text" id="vec-soul" placeholder="e.g. agents/alice" value="agents/alice" />
+      </div>
+      <div class="field-row">
+        <span class="field-label">text</span>
+        <input type="text" id="vec-text" placeholder="text to embed" value="Alice is an AI agent" />
+      </div>
+      <button class="btn-embed" id="btn-embed" disabled>Embed (local hash)</button>
+    </div>
+
+    <div class="log-area" id="log-left">
+      <div class="log-entry"><span class="log-system">Waiting for WASM…</span></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL: Receiver ── -->
+  <div class="panel" id="panel-right">
+    <div class="panel-header">
+      <span class="panel-title">Panel B — Receiver</span>
+      <span class="panel-ws-badge" id="badge-right">disconnected</span>
+    </div>
+
+    <div class="search-area">
+      <h3>Semantic vector search</h3>
+      <div class="search-row">
+        <input type="text" id="search-query" placeholder="search query…" value="AI agent assistant" style="flex:1;" />
+        <button class="btn-search" id="btn-search" disabled>Search</button>
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+
+    <div class="log-area" id="log-right">
+      <div class="log-entry"><span class="log-system">Waiting for WASM…</span></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>
+    Relay: <code id="footer-relay">ws://localhost:8765</code> ·
+    Start with: <code>rawkit serve --port 8765</code>
+  </span>
+  <span><a href="https://github.com/Koba42Corp/Rawkit_Ai">github.com/Koba42Corp/Rawkit_Ai</a></span>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

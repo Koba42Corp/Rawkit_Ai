@@ -27,6 +27,7 @@ pub enum EmbeddingError {
 #[serde(tag = "type")]
 pub enum EmbeddingConfig {
     /// Use a remote OpenAI-compatible embedding API.
+    #[cfg(feature = "openai")]
     #[serde(rename = "openai")]
     OpenAI {
         api_key: String,
@@ -142,12 +143,14 @@ fn simple_hash_str(s: &str) -> u32 {
 
 // ─── OpenAI-Compatible Embedding Provider ─────────────────────────────────────
 
+#[cfg(feature = "openai")]
 /// Embedding provider that calls OpenAI's embedding API (or any compatible endpoint).
 ///
 /// Supports:
 /// - OpenAI (text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002)
 /// - Azure OpenAI
 /// - Any OpenAI-compatible API (Ollama, LiteLLM, vLLM, etc.)
+#[cfg(feature = "openai")]
 pub struct OpenAIEmbedding {
     api_key: String,
     model: String,
@@ -155,6 +158,7 @@ pub struct OpenAIEmbedding {
     dims: usize,
 }
 
+#[cfg(feature = "openai")]
 impl OpenAIEmbedding {
     pub fn new(api_key: String, model: Option<String>, base_url: Option<String>) -> Self {
         let model = model.unwrap_or_else(|| "text-embedding-3-small".to_string());
@@ -211,6 +215,7 @@ impl OpenAIEmbedding {
     }
 }
 
+#[cfg(feature = "openai")]
 impl EmbeddingProvider for OpenAIEmbedding {
     fn embed(&self, text: &str) -> Result<Vec<f32>, EmbeddingError> {
         let results = self.call_api(&[text])?;
@@ -244,6 +249,7 @@ impl EmbeddingProvider for OpenAIEmbedding {
 /// Create an embedding provider from config.
 pub fn create_provider(config: &EmbeddingConfig) -> Option<Box<dyn EmbeddingProvider>> {
     match config {
+        #[cfg(feature = "openai")]
         EmbeddingConfig::OpenAI {
             api_key,
             model,

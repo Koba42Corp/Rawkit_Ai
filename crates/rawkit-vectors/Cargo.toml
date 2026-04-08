@@ -6,14 +6,18 @@ license.workspace = true
 description = "HNSW vector index and embedding pipeline for Rawkit"
 
 [dependencies]
-rawkit-core = { workspace = true }
+rawkit-core = { path = "../rawkit-core", default-features = false }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 ordered-float = "4"
 tracing = { workspace = true }
-ureq = { version = "2", features = ["json"] }
+ureq = { version = "2", features = ["json"], optional = true }
 rand = "0.8"
+
+[features]
+default = ["openai"]
+openai = ["dep:ureq"]
 
 [dev-dependencies]
 tokio = { workspace = true }

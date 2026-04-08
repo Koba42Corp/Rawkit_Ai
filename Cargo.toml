@@ -6,7 +6,6 @@ members = [
     "crates/rawkit-sync",
     "crates/rawkit-vectors",
     "crates/rawkit-server",
-    "bindings/rawkit-wasm",
 ]
 
 [workspace.package]

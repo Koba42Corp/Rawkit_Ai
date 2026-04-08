@@ -35,6 +35,29 @@ impl Rawkit {
         }
     }
 
+    /// Write a property with an explicit HAM state timestamp.
+    /// Use this when applying incoming sync messages so conflict resolution
+    /// uses the sender's clock, not the local browser time.
+    pub fn put_with_state(&self, soul: &str, key: &str, value: JsValue, state: f64) -> Result<(), JsValue> {
+        let val = js_to_value(value)?;
+        self.graph.put_with_state(soul, key, val, state);
+        Ok(())
+    }
+
+    /// Get all properties of a node as a JS object. Returns null if not found.
+    pub fn get_node(&self, soul: &str) -> JsValue {
+        match self.graph.get_node(soul) {
+            Some(node) => {
+                let obj = js_sys::Object::new();
+                for (key, val) in &node.props {
+                    let _ = js_sys::Reflect::set(&obj, &JsValue::from_str(key), &value_to_js(val));
+                }
+                obj.into()
+            }
+            None => JsValue::NULL,
+        }
+    }
+
     /// Delete a property.
     pub fn delete(&self, soul: &str, key: &str) {
         self.graph.delete(soul, key);

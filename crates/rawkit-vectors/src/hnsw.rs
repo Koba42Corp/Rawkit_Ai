@@ -16,7 +16,7 @@ use rawkit_core::Soul;
 /// Key parameters:
 /// - `m`: Max connections per node per layer (default 16)
 /// - `ef_construction`: Size of dynamic candidate list during build (default 200)
-/// - `ef_search`: Size of dynamic candidate list during search (default 50)
+/// - `ef_search`: Size of dynamic candidate list during search (default 100)
 pub struct HnswIndex {
     dimensions: usize,
     m: usize,

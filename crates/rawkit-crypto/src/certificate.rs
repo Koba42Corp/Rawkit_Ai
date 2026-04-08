@@ -5,7 +5,6 @@ use crate::sign::{sign, verify};
 
 /// A certificate grants write permission to a specific identity for a specific path.
 ///
-/// Replaces Gun's SEA.certify() with a cleaner model:
 /// - Issuer (the data owner) signs a certificate
 /// - Certificate specifies WHO (grantee public key) can write WHERE (path pattern)
 /// - Optional expiry for time-limited access

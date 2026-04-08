@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 /// Wire protocol message types.
 ///
-/// Rawkit uses a simple two-command protocol (like Gun.js) with additions
+/// Rawkit uses a simple two-command protocol with additions
 /// for subscriptions and acknowledgments:
 ///
 /// - PUT: Write data (includes state vector for HAM resolution)

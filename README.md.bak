@@ -1,23 +1,23 @@
 <p align="center">
-  <img src="logo.png" alt="Rawkit_AI" width="320" />
-</p>
-<p align="center">
-  <strong>Decentralized vector-graph memory for AI agents.</strong>
-</p>
-<p align="center">
-  Graph + Vector + Crypto + Real-time Sync. Written in Rust.
-</p>
-<p align="center">
-  <a href="#performance">Benchmarks</a> |
-  <a href="#quick-start">Quick Start</a> |
-  <a href="#architecture">Architecture</a> |
-  <a href="#api">API</a> |
-  <a href="#why-rawkit">Why Rawkit?</a>
+  <h1 align="center">Rawkit_Ai</h1>
+  <p align="center">
+    <strong>Decentralized vector-graph memory for AI agents.</strong>
+  </p>
+  <p align="center">
+    Graph + Vector + Crypto + Real-time Sync. Written in Rust.
+  </p>
+  <p align="center">
+    <a href="#performance">Benchmarks</a> |
+    <a href="#quick-start">Quick Start</a> |
+    <a href="#architecture">Architecture</a> |
+    <a href="#api">API</a> |
+    <a href="#why-rawkit">Why Rawkit?</a>
+  </p>
 </p>
 
 ---
 
-**Rawkit** is a decentralized vector-graph database built for AI agent memory. It combines real-time peer sync, semantic vector search, wallet-based identity, and CRDT conflict resolution into a single embeddable engine — written in Rust for performance, compiled to WASM for browsers.
+**Rawkit** is a decentralized vector-graph database built from the ground up for AI agent memory. It combines real-time peer sync, semantic vector search, wallet-based identity, and CRDT conflict resolution into a single embeddable engine — written in Rust for performance, compiled to WASM for browsers.
 
 No other database combines all of these properties. Existing solutions force you to choose between decentralized OR semantic OR real-time. Rawkit gives you all four.
 
@@ -53,26 +53,29 @@ rawkit bench
 
 ### The Problem
 
-AI agents need persistent memory. Current options are all centralized cloud services — Mem0, Letta, Zep. If the API goes down, your agent has amnesia. If the company pivots, your data is gone. You don't own your agent's mind.
+AI agents need persistent memory. Current options are all centralized cloud services (Mem0, Letta, Zep). If the API goes down, your agent has amnesia. If the company pivots, your data is gone. You don't own your agent's mind.
 
-Decentralized options exist but sacrifice performance, security, and developer experience. There has never been a database that is simultaneously decentralized, semantic, real-time, and production-grade.
+Meanwhile, the only decentralized graph database (Gun.js) hasn't been updated since mid-2024, has critical security vulnerabilities, no vector search, no formal protocol spec, and documentation described by its own community as "a complete nightmare."
 
 ### The Solution
 
-Rawkit is that database. Built from the ground up with:
+Rawkit is a clean-room reimplementation that takes what worked (graph data model, CRDT sync, peer architecture) and fixes everything that didn't:
 
-| Property | Rawkit |
-|----------|--------|
-| Language | Rust (+ WASM) |
-| Graph PUT throughput | **1,247,000 ops/sec** |
-| Conflict Resolution | Formally specified HAM CRDT |
-| Encryption | Ed25519 + ChaCha20-Poly1305 |
-| Vector Search | Built-in cosine similarity + HNSW |
-| Ordered Collections | Native support |
-| Real Deletion | Distributed GC with TTL |
-| Identity | Multi-chain wallet derivation |
-| Security | Audited crypto primitives only |
-| Protocol | Formal wire spec |
+| Feature | Gun.js | Rawkit |
+|---------|--------|--------|
+| Language | JavaScript | Rust (+ WASM) |
+| Graph PUT ops/sec | ~50,000* | **1,247,000** |
+| Conflict Resolution | Undocumented HAM | Formally specified HAM |
+| Encryption | SEA ("early alpha", CVEs) | Ed25519 + ChaCha20-Poly1305 |
+| Vector Search | None | Built-in cosine similarity |
+| Ordered Collections | Not supported | Native support |
+| Real Deletion | Not supported (tombstones forever) | Distributed GC with TTL |
+| Identity | Username/password | Multi-chain wallet derivation |
+| Security Audit | Never audited, path traversal CVE | Audited crypto primitives |
+| Protocol Spec | Outdated v0.1.x | Formal wire spec |
+| Active Maintenance | Last npm publish mid-2024 | Active development |
+
+<sub>*Gun.js self-reports 30M+ ops/sec but acknowledges these are "in-memory HashMap lookups" that "should be taken with a huge grain of salt."</sub>
 
 ## Key Features
 
@@ -119,6 +122,7 @@ rawkit get users/alice
 #   age = 30.0
 
 rawkit ls users/
+# users/alice
 
 # Start a relay server
 rawkit serve --port 8765
@@ -322,6 +326,7 @@ Rawkit is in active development. Here's what works today and what's coming next.
 - [ ] LlamaIndex `StorageContext` adapter
 - [ ] WebRTC transport (true P2P without relay)
 - [ ] Distributed garbage collection for tombstones
+- [ ] `rawkit bench --compare-gunjs` head-to-head benchmarks
 
 ## Test Suite
 

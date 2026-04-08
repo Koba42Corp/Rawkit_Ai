@@ -196,7 +196,7 @@ impl Graph {
         }
     }
 
-    /// Get current value once (equivalent to Gun's .once()).
+    /// Get current value once (reads the current state without subscribing).
     pub fn once(&self, soul: &str, key: &str) -> Option<Value> {
         self.get(soul, key)
     }

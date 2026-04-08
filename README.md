@@ -102,6 +102,10 @@ WebSocket-based gossip protocol. PUT and GET over the wire with state vectors. M
 
 ## Quick Start
 
+### Public Relay
+
+A free public relay is available at `wss://rawkit.koba42.com` — no setup required. Use it for development, demos, and evaluation.
+
 ### From Source
 
 ```bash
@@ -120,10 +124,11 @@ rawkit get users/alice
 
 rawkit ls users/
 
-# Start a relay server
-rawkit serve --port 8765
+# Sync to the public relay
+rawkit --db local.db sync wss://rawkit.koba42.com
 
-# In another terminal: sync a local database to the relay
+# Or start your own relay server
+rawkit serve --port 8765
 rawkit --db local.db sync ws://localhost:8765
 
 # Run benchmarks
@@ -340,6 +345,21 @@ running  1 test    (doc-tests)      ... ok
 
 test result: ok. 64 passed; 0 failed
 ```
+
+## Self-Hosting the Relay
+
+### Docker
+
+```bash
+docker build -t rawkit .
+docker run -d -p 8765:8765 -v rawkit-data:/data --name rawkit-relay rawkit
+```
+
+The relay exposes WebSocket on port 8765 and persists its graph to `/data/rawkit.db`.
+
+### With Coolify / Traefik
+
+Point Coolify at the GitHub repo, set the domain (e.g., `rawkit.yourdomain.com`), and deploy. Coolify auto-generates Traefik labels for TLS and WebSocket routing.
 
 ## Contributing
 

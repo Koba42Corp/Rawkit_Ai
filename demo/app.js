@@ -13,7 +13,9 @@
 
 import init, { Rawkit } from './pkg/rawkit_wasm.js';
 
-const RELAY_URL = 'ws://localhost:8765';
+// Default to the public relay. Override with ?relay=ws://localhost:8765
+const params = new URLSearchParams(window.location.search);
+const RELAY_URL = params.get('relay') || 'wss://rawkit.koba42.com';
 
 // ── Tiny UUID v4 (no crypto needed — just for dedup) ─────────────────────────
 function uuid() {

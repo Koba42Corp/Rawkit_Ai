@@ -295,8 +295,9 @@
 
 <div class="sub-header">
   Two independent browser-side Rawkit instances syncing through the relay at
-  <code id="relay-url-display">ws://localhost:8765</code>.
+  <code id="relay-url-display">wss://rawkit.koba42.com</code>.
   Each panel has its own WebSocket connection. Writes on the left appear on the right via the relay.
+  <span style="color:#333">Override: <code>?relay=ws://localhost:8765</code></span>
 </div>
 
 <main>
@@ -366,8 +367,8 @@
 
 <footer>
   <span>
-    Relay: <code id="footer-relay">ws://localhost:8765</code> ·
-    Start with: <code>rawkit serve --port 8765</code>
+    Relay: <code id="footer-relay">wss://rawkit.koba42.com</code> ·
+    Local: <code>?relay=ws://localhost:8765</code>
   </span>
   <span><a href="https://github.com/Koba42Corp/Rawkit_Ai">github.com/Koba42Corp/Rawkit_Ai</a></span>
 </footer>

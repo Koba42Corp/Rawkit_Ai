@@ -4,19 +4,18 @@ Two independent Rawkit WASM instances syncing through the relay in real time.
 
 ## Run it
 
-**Step 1 — Start the relay:**
-```bash
-cargo run --release -p rawkit-server -- serve --port 8765
-```
-
-**Step 2 — Serve the demo:**
+**Option A — Use the public relay (zero setup):**
 ```bash
 python3 -m http.server 3000 --directory demo
+# Open http://localhost:3000/
 ```
+Connects to `wss://rawkit.koba42.com` by default.
 
-**Step 3 — Open in browser:**
-```
-http://localhost:3000/
+**Option B — Use a local relay:**
+```bash
+cargo run --release -p rawkit-server -- serve --port 8765
+python3 -m http.server 3000 --directory demo
+# Open http://localhost:3000/?relay=ws://localhost:8765
 ```
 
 > Must be served over HTTP — WASM won't load from `file://`.

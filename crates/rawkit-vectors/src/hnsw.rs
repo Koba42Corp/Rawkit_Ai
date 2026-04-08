@@ -63,7 +63,7 @@ impl Ord for Candidate {
 
 impl HnswIndex {
     pub fn new(dimensions: usize) -> Self {
-        Self::with_params(dimensions, 16, 200, 50)
+        Self::with_params(dimensions, 16, 200, 100)
     }
 
     pub fn with_params(dimensions: usize, m: usize, ef_construction: usize, ef_search: usize) -> Self {

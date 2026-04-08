@@ -13,7 +13,7 @@ members = [
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/koba42/rawkit-ai"
+repository = "https://github.com/Koba42Corp/Rawkit_Ai"
 description = "Decentralized vector-graph memory for AI agents"
 
 [workspace.dependencies]

@@ -1,0 +1,24 @@
+[package]
+name = "rawkit-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Rawkit relay server binary"
+
+[[bin]]
+name = "rawkit"
+path = "src/main.rs"
+
+[dependencies]
+rawkit-core = { workspace = true, features = ["sqlite"] }
+rawkit-crypto = { workspace = true }
+rawkit-sync = { workspace = true }
+rawkit-vectors = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+clap = { version = "4", features = ["derive"] }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rand = "0.8"

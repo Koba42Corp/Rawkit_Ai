@@ -4,7 +4,8 @@ FROM rust:1.82-slim-bookworm AS builder
 RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
+COPY Cargo.toml rust-toolchain.toml ./
+COPY Cargo.lock* ./
 COPY crates/ crates/
 
 # Build only the server binary in release mode

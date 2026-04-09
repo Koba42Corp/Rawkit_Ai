@@ -317,12 +317,13 @@ Rawkit is in active development. Here's what works today and what's coming next.
 | Local hash embeddings | **Working** | N-gram based, no API key needed, deterministic |
 | OpenAI embedding provider | **Working** | Calls any OpenAI-compatible API for real embeddings |
 | Peer manager | **Working** | Message dedup, gossip broadcast, HAM merge |
-| WASM bindings (source) | **Compiles** | wasm-bindgen bindings written, needs wasm-pack build |
+| WASM bindings | **Working** | Built with wasm-pack, browser-ready (88KB) |
+| Browser playground demo | **Working** | Two syncing panels, vector search, live relay |
+| Hosted public relay | **Working** | `wss://rawkit.koba42.com` — zero-setup for devs |
 
 ### Coming Next (v0.2)
 
 - [ ] npm package with TypeScript wrapper
-- [ ] Browser playground demo (two syncing panels)
 - [ ] LangChain `BaseMemory` adapter
 - [ ] LlamaIndex `StorageContext` adapter
 - [ ] WebRTC transport (true P2P without relay)
